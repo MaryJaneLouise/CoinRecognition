@@ -1,19 +1,21 @@
 import cv2
 import cvzone
 import numpy as np
+import pyttsx3
+
 from cvzone.ColorModule import ColorFinder
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 cap.set(3, 640)
 cap.set(4, 480)
 
 totalMoney = 0
 
+textSpeech = pyttsx3.init()
+
 myColorFinder = ColorFinder(False)
 # Custom Orange Color
 hsvVals = {'hmin': 0, 'smin': 0, 'vmin': 145, 'hmax': 63, 'smax': 91, 'vmax': 255}
-
-
 
 def empty(a):
     pass
@@ -21,8 +23,8 @@ def empty(a):
 
 cv2.namedWindow("Settings")
 cv2.resizeWindow("Settings", 640, 240)
-cv2.createTrackbar("Threshold1", "Settings", 219, 255, empty)
-cv2.createTrackbar("Threshold2", "Settings", 233, 255, empty)
+cv2.createTrackbar("Threshold1", "Settings", 15, 255, empty)
+cv2.createTrackbar("Threshold2", "Settings", 230, 255, empty)
 
 
 def preProcessing(img):
@@ -36,6 +38,9 @@ def preProcessing(img):
 
     return imgPre
 
+def speakAmount(speakWordAmount):
+    textSpeech.say(speakWordAmount)
+    textSpeech.runAndWait()
 
 while True:
     success, img = cap.read()
@@ -58,20 +63,26 @@ while True:
                 imgColor, mask = myColorFinder.update(imgCrop, hsvVals)
                 whitePixelCount = cv2.countNonZero(mask)
                 # print(whitePixelCount)
+                print(area)
 
-                if area < 2050:
-                    totalMoney += 5
-                elif 2050 < area < 2500:
+                # counting the sum of the coins
+                if area < 10200:
                     totalMoney += 1
-                else:
-                    totalMoney += 2
+                elif 10500 < area < 12300:
+                    totalMoney += 5
+                elif 12700 < area < 12900:
+                    totalMoney += 10
 
-    # print(totalMoney)
+
+
+
     cvzone.putTextRect(imgCount, f'P {totalMoney}', (100, 200),scale=10,offset=30,thickness=7)
 
     imgStacked = cvzone.stackImages([img, imgPre, imgContours,imgCount], 2, 1)
     cvzone.putTextRect(imgStacked, f'P {totalMoney}', (50, 50))
 
-    cv2.imshow("Image", imgStacked)
+    # speakAmount(totalMoney)
+
+    cv2.imshow("Coin Counter", imgStacked)
     # cv2.imshow("imgColor", imgColor)
     cv2.waitKey(1)
