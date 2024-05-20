@@ -1,9 +1,14 @@
 import cv2
 import cvzone
 import numpy as np
-# import pyttsx3
+import pyttsx3
 from cvzone.ColorModule import ColorFinder
 from picamera2 import Picamera2
+import RPi.GPIO as GPIO
+
+GPIO.setmode(GPIO.BCM)
+buttonPin = 26
+GPIO.setup(buttonPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 piCam = Picamera2()
 piCam.preview_configuration.main.size=(640,480)
@@ -14,7 +19,7 @@ piCam.start()
 
 totalMoney = 0
 
-# textSpeech = pyttsx3.init()
+textSpeech = pyttsx3.init()
 
 myColorFinder = ColorFinder(False)
 # Custom Orange Color
@@ -41,9 +46,17 @@ def preProcessing(img):
 
     return imgPre
 
-# def speakAmount(speakWordAmount):
-#     textSpeech.say(speakWordAmount)
-#     textSpeech.runAndWait()
+def speakAmount():
+    global totalMoney
+    textSpeech.say(str(totalMoney))
+    textSpeech.runAndWait()
+
+def buttonPressed(channel):
+    speakAmount()
+
+# GPIO.add_event_detect(buttonPin, GPIO.RISING, callback=buttonPressed, bouncetime=300)
+
+
 
 while True:
     img = piCam.capture_array()
@@ -66,7 +79,7 @@ while True:
                 imgColor, mask = myColorFinder.update(imgCrop, hsvVals)
                 whitePixelCount = cv2.countNonZero(mask)
                 # print(whitePixelCount)
-                print(area)
+                # print(area)
 
                 # counting the sum of the coins
                 if area < 10200:
@@ -84,8 +97,9 @@ while True:
     imgStacked = cvzone.stackImages([img, imgPre, imgContours,imgCount], 2, 1)
     cvzone.putTextRect(imgStacked, f'P {totalMoney}', (50, 50))
 
-    # speakAmount(totalMoney)
 
     cv2.imshow("Coin Counter", imgStacked)
     # cv2.imshow("imgColor", imgColor)
     cv2.waitKey(1)
+
+GPIO.cleanup()
