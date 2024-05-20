@@ -7,8 +7,10 @@ from picamera2 import Picamera2
 import RPi.GPIO as GPIO
 
 GPIO.setmode(GPIO.BCM)
-buttonPin = 26
+buttonPin = 2
+buttonPin2 = 3
 GPIO.setup(buttonPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(buttonPin2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 piCam = Picamera2()
 piCam.preview_configuration.main.size=(640,480)
@@ -18,6 +20,10 @@ piCam.configure("preview")
 piCam.start()
 
 totalMoney = 0
+totalOnePeso = 0
+totalFivePeso = 0
+totalTenPeso = 0
+totalTwentyPeso = 0
 
 textSpeech = pyttsx3.init()
 
@@ -48,58 +54,80 @@ def preProcessing(img):
 
 def speakAmount():
     global totalMoney
-    textSpeech.say(str(totalMoney))
+    textSpeech.say(f"{totalMoney} pesos")
     textSpeech.runAndWait()
+
+def speakTotalCoins():
+    global totalOnePeso
+    global totalFivePeso
+    global totalTenPeso
+    global totalTenPeso
+    textSpeech.say(f"You have a total of {totalOnePeso} 1 peso coins,"
+                   f"{totalFivePeso} 5 peso coins, "
+                   f"{totalTenPeso} 10 peso coins, and "
+                   f"{totalTwentyPeso} 20 peso coins.")
+    textSpeech.runAndWait()
+
 
 def buttonPressed(channel):
     speakAmount()
 
-# GPIO.add_event_detect(buttonPin, GPIO.RISING, callback=buttonPressed, bouncetime=300)
+def buttonPressed2(channel):
+    speakTotalCoins()
+
+GPIO.add_event_detect(buttonPin, GPIO.RISING, callback=buttonPressed, bouncetime=300)
+GPIO.add_event_detect(buttonPin2, GPIO.RISING, callback=buttonPressed2, bouncetime=300)
 
 
+try:
+    while True:
+        img = piCam.capture_array()
+        imgPre = preProcessing(img)
+        imgContours, conFound = cvzone.findContours(img, imgPre, minArea=20)
 
-while True:
-    img = piCam.capture_array()
-    imgPre = preProcessing(img)
-    imgContours, conFound = cvzone.findContours(img, imgPre, minArea=20)
+        totalMoney = 0
+        totalOnePeso = 0
+        totalFivePeso = 0
+        totalTenPeso = 0
+        totalTwentyPeso = 0
 
-    totalMoney = 0
-    imgCount = np.zeros((480, 640, 3), np.uint8)
+        imgCount = np.zeros((480, 640, 3), np.uint8)
 
-    if conFound:
-        for count, contour in enumerate(conFound):
-            peri = cv2.arcLength(contour['cnt'], True)
-            approx = cv2.approxPolyDP(contour['cnt'], 0.02 * peri, True)
+        if conFound:
+            for count, contour in enumerate(conFound):
+                peri = cv2.arcLength(contour['cnt'], True)
+                approx = cv2.approxPolyDP(contour['cnt'], 0.02 * peri, True)
 
-            if len(approx) > 5:
-                area = contour['area']
-                x, y, w, h = contour['bbox']
-                imgCrop = img[y:y + h, x:x + w]
-                # cv2.imshow(str(count),imgCrop)
-                imgColor, mask = myColorFinder.update(imgCrop, hsvVals)
-                whitePixelCount = cv2.countNonZero(mask)
-                # print(whitePixelCount)
-                # print(area)
+                if len(approx) > 5:
+                    area = contour['area']
+                    x, y, w, h = contour['bbox']
+                    imgCrop = img[y:y + h, x:x + w]
+                    # cv2.imshow(str(count),imgCrop)
+                    imgColor, mask = myColorFinder.update(imgCrop, hsvVals)
+                    whitePixelCount = cv2.countNonZero(mask)
+                    # print(whitePixelCount)
+                    # print(area)
 
-                # counting the sum of the coins
-                if area < 10200:
-                    totalMoney += 1
-                elif 10500 < area < 12300:
-                    totalMoney += 5
-                elif 12700 < area < 12900:
-                    totalMoney += 10
+                    # counting the sum of the coins
+                    if area < 10200:
+                        totalMoney += 1
+                        totalOnePeso += 1
+                    elif 10500 < area < 12300:
+                        totalMoney += 5
+                        totalFivePeso += 1
+                    elif 12700 < area < 12900:
+                        totalMoney += 10
+                        totalTenPeso += 1
+
+        cvzone.putTextRect(imgCount, f'P {totalMoney}', (100, 200), scale=10, offset=30, thickness=7)
+
+        imgStacked = cvzone.stackImages([img, imgPre, imgContours, imgCount], 2, 1)
+        cvzone.putTextRect(imgStacked, f'P {totalMoney}', (50, 50))
+
+        cv2.imshow("Coin Counter", imgStacked)
+        # cv2.imshow("imgColor", imgColor)
+        cv2.waitKey(1)
+finally:
+    GPIO.cleanup()
 
 
-
-
-    cvzone.putTextRect(imgCount, f'P {totalMoney}', (100, 200),scale=10,offset=30,thickness=7)
-
-    imgStacked = cvzone.stackImages([img, imgPre, imgContours,imgCount], 2, 1)
-    cvzone.putTextRect(imgStacked, f'P {totalMoney}', (50, 50))
-
-
-    cv2.imshow("Coin Counter", imgStacked)
-    # cv2.imshow("imgColor", imgColor)
-    cv2.waitKey(1)
-
-GPIO.cleanup()
