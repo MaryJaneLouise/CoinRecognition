@@ -60,10 +60,26 @@ def speakTotalCoins():
     global totalFivePeso
     global totalTenPeso
     global totalTenPeso
-    textSpeech.say(f"You have a total of {totalOnePeso} 1 peso coins, "
-                   f"{totalFivePeso} 5 peso coins, "
-                   f"{totalTenPeso} 10 peso coins, and "
-                   f"{totalTwentyPeso} 20 peso coins.")
+
+    parts = []
+    if totalOnePeso != 0:
+        parts.append(f"{totalOnePeso} 1 peso coins")
+    if totalFivePeso != 0:
+        parts.append(f"{totalFivePeso} 5 peso coins")
+    if totalTenPeso != 0:
+        parts.append(f"{totalTenPeso} 10 peso coins")
+    if totalTwentyPeso != 0:
+        parts.append(f"{totalTwentyPeso} 20 peso coins")
+
+    if parts:
+        if len(parts) == 1:
+            text = f"You have a total of {parts[0]}."
+        else:
+            text = f"You have a total of {', '.join(parts[:-1])}, and {parts[-1]}."
+    else:
+        text = "No coins detected, please place some coins first."
+
+    textSpeech.say(text)
     textSpeech.runAndWait()
 
 # A user-defined function that calls the function speakAmount in order to be operated by the first button
@@ -106,6 +122,7 @@ try:
         imgContours, conFound = cvzone.findContours(img, imgPre, minArea=20)
 
         # Initializes the global variables for counting and amount of the coins
+        area = 0
         totalMoney = 0
         totalOnePeso = 0
         totalFivePeso = 0
@@ -133,20 +150,25 @@ try:
 
                     # Counting the sum of the coins
                     # Counting also the count of each coins
-                    if area < 10200:
+                    if 4500 < area < 5100:
                         totalMoney += 1
                         totalOnePeso += 1
-                    elif 10500 < area < 12300:
+                    elif 5530 < area < 5930:
                         totalMoney += 5
                         totalFivePeso += 1
-                    elif 12700 < area < 12900:
+                    elif 6100 < area < 6700:
                         totalMoney += 10
                         totalTenPeso += 1
+                    elif 8000 < area < 8700:
+                        totalMoney += 20
+                        totalTwentyPeso +=1
 
-        cvzone.putTextRect(imgCount, f'P {totalMoney}', (100, 200), scale=10, offset=30, thickness=7)
+        cvzone.putTextRect(imgCount, f'P {area}', (100, 200), scale=10, offset=30, thickness=7)
 
         imgStacked = cvzone.stackImages([img, imgPre, imgContours, imgCount], 2, 1)
-        cvzone.putTextRect(imgStacked, f'P {totalMoney}', (50, 50))
+        cvzone.putTextRect(imgStacked, f'P {totalMoney}', (50, 100))
+        totalCoins = f'1: {totalOnePeso} 5: {totalFivePeso} 10: {totalTenPeso} 20: {totalTwentyPeso}'
+        cvzone.putTextRect(imgStacked, totalCoins, (50, 50))
 
         cv2.imshow("Coin Counter", imgStacked)
         # cv2.imshow("imgColor", imgColor)
