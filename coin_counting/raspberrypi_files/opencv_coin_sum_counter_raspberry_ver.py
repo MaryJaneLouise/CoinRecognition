@@ -98,7 +98,7 @@ GPIO.add_event_detect(buttonSpeakTotalCoins, GPIO.RISING, callback=buttonSpeakCo
 # It has a default value of 15 and 235, respectively.
 cv2.namedWindow("Settings")
 cv2.resizeWindow("Settings", 640, 240)
-cv2.createTrackbar("Threshold1", "Settings", 15, 255, empty)
+cv2.createTrackbar("Threshold1", "Settings", 185, 255, empty)
 cv2.createTrackbar("Threshold2", "Settings", 230, 255, empty)
 
 # A user-defined function that pre-processed the image being streamed by the RPi Camera
@@ -150,29 +150,35 @@ try:
 
                     # Counting the sum of the coins
                     # Counting also the count of each coins
-                    if 4500 < area < 5100:
+                    if 4500 < area < 5100 and whitePixelCount:
                         totalMoney += 1
                         totalOnePeso += 1
                     elif 5530 < area < 5930:
                         totalMoney += 5
                         totalFivePeso += 1
-                    elif 6100 < area < 6700:
+                    elif 6100 < area < 7000:
                         totalMoney += 10
                         totalTenPeso += 1
-                    elif 8000 < area < 8700:
+                    elif 7775 < area < 8700:
                         totalMoney += 20
                         totalTwentyPeso +=1
 
-        cvzone.putTextRect(imgCount, f'P {area}', (100, 200), scale=10, offset=30, thickness=7)
+        cvzone.putTextRect(imgCount, f'C:{area}', (100, 200), scale=10, offset=30, thickness=7)
 
         imgStacked = cvzone.stackImages([img, imgPre, imgContours, imgCount], 2, 1)
         totalCoins = f'P1: {totalOnePeso} P5: {totalFivePeso} P10: {totalTenPeso} P20: {totalTwentyPeso}'
         totalMoneyText = f'Total: P{totalMoney}'
-        cvzone.putTextRect(imgStacked, totalCoins, (50, 50), scale=2.5)
-        cvzone.putTextRect(imgStacked, totalMoneyText, (50, 100))
 
-        cv2.imshow("Coin Counter", imgStacked)
-        # cv2.imshow("imgColor", imgColor)
+        # For development // don't forget to disable either of two
+        # cvzone.putTextRect(imgStacked, totalCoins, pos=(25, 50), scale=2.5)
+        # cvzone.putTextRect(imgStacked, totalMoneyText, (50, 100))
+        # cv2.imshow("Coin Counter", imgStacked)
+
+        # For deployment // don't forget to disable either of two
+        cvzone.putTextRect(img, totalCoins, pos=(25, 50), scale=2.5)
+        cvzone.putTextRect(img, totalMoneyText, (25, 100))
+        cv2.imshow("Coin Counter", img)
+
         cv2.waitKey(1)
 finally:
     GPIO.cleanup()
