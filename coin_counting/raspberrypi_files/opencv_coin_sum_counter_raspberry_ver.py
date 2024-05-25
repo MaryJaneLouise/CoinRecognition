@@ -147,10 +147,10 @@ try:
 
                     # Counting the sum of the coins
                     # Counting also the count of each coins
-                    if 4500 < area < 5100 and whitePixelCount:
+                    if 4500 < area < 5200 and whitePixelCount:
                         totalMoney += 1
                         totalOnePeso += 1
-                    elif 5530 < area < 5930:
+                    elif 5530 < area < 6100:
                         totalMoney += 5
                         totalFivePeso += 1
                     elif 6100 < area < 7000:
@@ -167,14 +167,14 @@ try:
         totalMoneyText = f'Total: P{totalMoney}'
 
         # For development // don't forget to disable either of two
-        # cvzone.putTextRect(imgStacked, totalCoins, pos=(25, 50), scale=2.5)
-        # cvzone.putTextRect(imgStacked, totalMoneyText, (25, 100))
-        # cv2.imshow("Coin Counter", imgStacked)
+        cvzone.putTextRect(imgStacked, totalCoins, pos=(25, 50), scale=2.5)
+        cvzone.putTextRect(imgStacked, totalMoneyText, (25, 100))
+        cv2.imshow("Coin Counter", imgStacked)
 
         # For deployment // don't forget to disable either of two
-        cvzone.putTextRect(img, totalCoins, pos=(25, 50), scale=2.5)
-        cvzone.putTextRect(img, totalMoneyText, (25, 100))
-        cv2.imshow("Coin Counter", img)
+        # cvzone.putTextRect(img, totalCoins, pos=(25, 50), scale=2.5)
+        # cvzone.putTextRect(img, totalMoneyText, (25, 100))
+        # cv2.imshow("Coin Counter", img)
 
         cv2.waitKey(1)
 finally:

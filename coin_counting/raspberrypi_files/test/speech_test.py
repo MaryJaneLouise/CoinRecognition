@@ -11,7 +11,7 @@ def speakTotalCoins():
     global totalOnePeso
     global totalFivePeso
     global totalTenPeso
-    global totalTenPeso
+    global totalTwentyPeso
 
     parts = []
     if totalOnePeso != 0:
@@ -34,4 +34,5 @@ def speakTotalCoins():
     textSpeech.say(text)
     textSpeech.runAndWait()
 
-speakTotalCoins()
+while True:
+    speakTotalCoins()
