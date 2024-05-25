@@ -51,7 +51,7 @@ def speakAmount():
     if totalMoney == 0:
         textSpeech.say("No coins detected, please place some coins first.")
     else:
-        textSpeech.say(f"{totalMoney} pesos")
+        textSpeech.say(f"You have a total of {totalMoney} pesos.")
     textSpeech.runAndWait()
 
 # A user-defined function that speaks the total count of coins detected by the system
@@ -166,9 +166,10 @@ try:
         cvzone.putTextRect(imgCount, f'P {area}', (100, 200), scale=10, offset=30, thickness=7)
 
         imgStacked = cvzone.stackImages([img, imgPre, imgContours, imgCount], 2, 1)
-        cvzone.putTextRect(imgStacked, f'P {totalMoney}', (50, 100))
-        totalCoins = f'1: {totalOnePeso} 5: {totalFivePeso} 10: {totalTenPeso} 20: {totalTwentyPeso}'
-        cvzone.putTextRect(imgStacked, totalCoins, (50, 50))
+        totalCoins = f'P1: {totalOnePeso} P5: {totalFivePeso} P10: {totalTenPeso} P20: {totalTwentyPeso}'
+        totalMoneyText = f'Total: P{totalMoney}'
+        cvzone.putTextRect(imgStacked, totalCoins, (50, 50), scale=2.5)
+        cvzone.putTextRect(imgStacked, totalMoneyText, (50, 100))
 
         cv2.imshow("Coin Counter", imgStacked)
         # cv2.imshow("imgColor", imgColor)
