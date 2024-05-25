@@ -163,21 +163,21 @@ try:
                         totalMoney += 20
                         totalTwentyPeso +=1
 
-        cvzone.putTextRect(imgCount, f'C:{area}', (100, 200), scale=10, offset=30, thickness=7)
+        cvzone.putTextRect(imgCount, f'C:{area}', (25, 50))
 
         imgStacked = cvzone.stackImages([img, imgPre, imgContours, imgCount], 2, 1)
         totalCoins = f'P1: {totalOnePeso} P5: {totalFivePeso} P10: {totalTenPeso} P20: {totalTwentyPeso}'
         totalMoneyText = f'Total: P{totalMoney}'
 
         # For development // don't forget to disable either of two
-        # cvzone.putTextRect(imgStacked, totalCoins, pos=(25, 50), scale=2.5)
-        # cvzone.putTextRect(imgStacked, totalMoneyText, (50, 100))
-        # cv2.imshow("Coin Counter", imgStacked)
+        cvzone.putTextRect(imgStacked, totalCoins, pos=(25, 50), scale=2.5)
+        cvzone.putTextRect(imgStacked, totalMoneyText, (25, 100))
+        cv2.imshow("Coin Counter", imgStacked)
 
         # For deployment // don't forget to disable either of two
-        cvzone.putTextRect(img, totalCoins, pos=(25, 50), scale=2.5)
-        cvzone.putTextRect(img, totalMoneyText, (25, 100))
-        cv2.imshow("Coin Counter", img)
+        # cvzone.putTextRect(img, totalCoins, pos=(25, 50), scale=2.5)
+        # cvzone.putTextRect(img, totalMoneyText, (25, 100))
+        # cv2.imshow("Coin Counter", img)
 
         cv2.waitKey(1)
 finally:
