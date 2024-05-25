@@ -59,7 +59,7 @@ def speakTotalCoins():
     global totalOnePeso
     global totalFivePeso
     global totalTenPeso
-    global totalTenPeso
+    global totalTwentyPeso
 
     parts = []
     if totalOnePeso != 0:
@@ -142,11 +142,8 @@ try:
                     area = contour['area']
                     x, y, w, h = contour['bbox']
                     imgCrop = img[y:y + h, x:x + w]
-                    # cv2.imshow(str(count),imgCrop)
                     imgColor, mask = myColorFinder.update(imgCrop, hsvVals)
                     whitePixelCount = cv2.countNonZero(mask)
-                    # print(whitePixelCount)
-                    # print(area)
 
                     # Counting the sum of the coins
                     # Counting also the count of each coins
