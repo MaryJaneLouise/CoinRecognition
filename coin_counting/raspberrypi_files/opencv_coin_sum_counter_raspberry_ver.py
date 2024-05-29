@@ -155,28 +155,24 @@ try:
 
                     # Counting the sum of the coins
                     # Counting also the count of each coins
+                    # Contour color will be showing the invalid coins
                     if 4500 < area < 5200 and whitePixelCount:
                         totalMoney += 1
                         totalOnePeso += 1
-                        contourColor = (0, 255, 0)
                     elif 5530 < area < 6100:
                         totalMoney += 5
                         totalFivePeso += 1
-                        contourColor = (0, 255, 0)
                     elif 6100 < area < 7000:
                         totalMoney += 10
                         totalTenPeso += 1
-                        contourColor = (0, 255, 0)
                     elif 7600 < area < 8700:
                         totalMoney += 20
                         totalTwentyPeso +=1
-                        contourColor = (0, 255, 0)
                     else:
                         totalInvalidCoinsCount += 1
                         contourColor = (0, 0, 255)
-
-                    cv2.drawContours(imgContours, [contour['cnt']], -1, contourColor, 3)
-                    cv2.rectangle(imgContours, (x, y), (x + w, y + h), contourColor, 2)
+                        cv2.drawContours(img, [contour['cnt']], -1, contourColor, 3)
+                        cv2.rectangle(img, (x, y), (x + w, y + h), contourColor, 2)
 
         cvzone.putTextRect(imgCount, f'C:{area}', (25, 50))
 
@@ -191,17 +187,11 @@ try:
         # cvzone.putTextRect(imgStacked, totalMoneyText, (25, 150))
         # cv2.imshow("Coin Counter", imgStacked)
 
-        # For deployment (with borders) // don't forget to disable either of two
-        cvzone.putTextRect(imgContours, totalCoins, pos=(25, 50), scale=2.5)
-        cvzone.putTextRect(imgContours, totalInvalidCoins, (25, 100))
-        cvzone.putTextRect(imgContours, totalMoneyText, (25, 150))
-        cv2.imshow("Coin Counter", imgContours)
-
         # For deployment // don't forget to disable either of two
-        # cvzone.putTextRect(img, totalCoins, pos=(25, 50), scale=2.5)
-        # cvzone.putTextRect(img, totalInvalidCoins, (25, 100))
-        # cvzone.putTextRect(img, totalMoneyText, (25, 150))
-        # cv2.imshow("Coin Counter", img)
+        cvzone.putTextRect(img, totalCoins, pos=(25, 50), scale=2.5)
+        cvzone.putTextRect(img, totalInvalidCoins, (25, 100))
+        cvzone.putTextRect(img, totalMoneyText, (25, 150))
+        cv2.imshow("Coin Counter", img)
 
         cv2.waitKey(1)
 finally:
