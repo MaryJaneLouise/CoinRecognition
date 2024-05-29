@@ -167,14 +167,14 @@ try:
         totalMoneyText = f'Total: P{totalMoney}'
 
         # For development // don't forget to disable either of two
-        cvzone.putTextRect(imgStacked, totalCoins, pos=(25, 50), scale=2.5)
-        cvzone.putTextRect(imgStacked, totalMoneyText, (25, 100))
-        cv2.imshow("Coin Counter", imgStacked)
+        # cvzone.putTextRect(imgStacked, totalCoins, pos=(25, 50), scale=2.5)
+        # cvzone.putTextRect(imgStacked, totalMoneyText, (25, 100))
+        # cv2.imshow("Coin Counter", imgStacked)
 
         # For deployment // don't forget to disable either of two
-        # cvzone.putTextRect(img, totalCoins, pos=(25, 50), scale=2.5)
-        # cvzone.putTextRect(img, totalMoneyText, (25, 100))
-        # cv2.imshow("Coin Counter", img)
+        cvzone.putTextRect(img, totalCoins, pos=(25, 50), scale=2.5)
+        cvzone.putTextRect(img, totalMoneyText, (25, 100))
+        cv2.imshow("Coin Counter", img)
 
         cv2.waitKey(1)
 finally:
