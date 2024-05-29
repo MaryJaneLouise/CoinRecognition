@@ -158,17 +158,25 @@ try:
                     if 4500 < area < 5200 and whitePixelCount:
                         totalMoney += 1
                         totalOnePeso += 1
+                        contourColor = (0, 255, 0)
                     elif 5530 < area < 6100:
                         totalMoney += 5
                         totalFivePeso += 1
+                        contourColor = (0, 255, 0)
                     elif 6100 < area < 7000:
                         totalMoney += 10
                         totalTenPeso += 1
+                        contourColor = (0, 255, 0)
                     elif 7600 < area < 8700:
                         totalMoney += 20
                         totalTwentyPeso +=1
+                        contourColor = (0, 255, 0)
                     else:
                         totalInvalidCoinsCount += 1
+                        contourColor = (0, 0, 255)
+
+                    cv2.drawContours(imgContours, [contour['cnt']], -1, contourColor, 3)
+                    cv2.rectangle(imgContours, (x, y), (x + w, y + h), contourColor, 2)
 
         cvzone.putTextRect(imgCount, f'C:{area}', (25, 50))
 
