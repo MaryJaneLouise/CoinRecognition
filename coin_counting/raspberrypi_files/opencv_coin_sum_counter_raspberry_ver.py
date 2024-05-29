@@ -40,6 +40,7 @@ totalOnePeso = 0
 totalFivePeso = 0
 totalTenPeso = 0
 totalTwentyPeso = 0
+totalInvalidCoinsCount = 0
 
 # Makes a pass statement disguised as a function
 def empty(a):
@@ -60,6 +61,7 @@ def speakTotalCoins():
     global totalFivePeso
     global totalTenPeso
     global totalTwentyPeso
+    global totalInvalidCoinsCount
 
     parts = []
     if totalOnePeso != 0:
@@ -70,6 +72,11 @@ def speakTotalCoins():
         parts.append(f"{totalTenPeso} 10 peso coins")
     if totalTwentyPeso != 0:
         parts.append(f"{totalTwentyPeso} 20 peso coins")
+    if totalInvalidCoinsCount != 0:
+        if totalInvalidCoinsCount == 1:
+            parts.append(f"an invalid coins")
+        else:
+            parts.append(f"some invalid coins")
 
     if parts:
         if len(parts) == 1:
@@ -128,6 +135,7 @@ try:
         totalFivePeso = 0
         totalTenPeso = 0
         totalTwentyPeso = 0
+        totalInvalidCoinsCount = 0
 
         # Initializes the image stream for the system
         imgCount = np.zeros((480, 640, 3), np.uint8)
@@ -156,25 +164,36 @@ try:
                     elif 6100 < area < 7000:
                         totalMoney += 10
                         totalTenPeso += 1
-                    elif 7775 < area < 8700:
+                    elif 7600 < area < 8700:
                         totalMoney += 20
                         totalTwentyPeso +=1
+                    else:
+                        totalInvalidCoinsCount += 1
 
         cvzone.putTextRect(imgCount, f'C:{area}', (25, 50))
 
         imgStacked = cvzone.stackImages([img, imgPre, imgContours, imgCount], 2, 1)
         totalCoins = f'P1: {totalOnePeso} P5: {totalFivePeso} P10: {totalTenPeso} P20: {totalTwentyPeso}'
+        totalInvalidCoins = f'Invalid coins: {totalInvalidCoinsCount}'
         totalMoneyText = f'Total: P{totalMoney}'
 
         # For development // don't forget to disable either of two
         # cvzone.putTextRect(imgStacked, totalCoins, pos=(25, 50), scale=2.5)
-        # cvzone.putTextRect(imgStacked, totalMoneyText, (25, 100))
+        # cvzone.putTextRect(imgStacked, totalInvalidCoins, (25, 100))
+        # cvzone.putTextRect(imgStacked, totalMoneyText, (25, 150))
         # cv2.imshow("Coin Counter", imgStacked)
 
+        # For deployment (with borders) // don't forget to disable either of two
+        cvzone.putTextRect(imgContours, totalCoins, pos=(25, 50), scale=2.5)
+        cvzone.putTextRect(imgContours, totalInvalidCoins, (25, 100))
+        cvzone.putTextRect(imgContours, totalMoneyText, (25, 150))
+        cv2.imshow("Coin Counter", imgContours)
+
         # For deployment // don't forget to disable either of two
-        cvzone.putTextRect(img, totalCoins, pos=(25, 50), scale=2.5)
-        cvzone.putTextRect(img, totalMoneyText, (25, 100))
-        cv2.imshow("Coin Counter", img)
+        # cvzone.putTextRect(img, totalCoins, pos=(25, 50), scale=2.5)
+        # cvzone.putTextRect(img, totalInvalidCoins, (25, 100))
+        # cvzone.putTextRect(img, totalMoneyText, (25, 150))
+        # cv2.imshow("Coin Counter", img)
 
         cv2.waitKey(1)
 finally:
